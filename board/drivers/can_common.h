@@ -10,6 +10,8 @@ can_health_t can_health[PANDA_CAN_CNT] = {{0}, {0}, {0}};
 // Ignition detected from CAN meessages
 bool ignition_can = false;
 uint32_t ignition_can_cnt = 0U;
+bool ignore_ignition_line = false;
+bool ignore_ignition_line_redundant = false;
 
 bool can_silent = true;
 bool can_loopback = false;
@@ -142,11 +144,12 @@ void can_init_all(void) {
   }
 }
 
+// Only work for kedua
 void can_set_orientation(bool flipped) {
-  bus_config[0].bus_lookup = flipped ? 2U : 0U;
-  bus_config[0].can_num_lookup = flipped ? 2U : 0U;
-  bus_config[2].bus_lookup = flipped ? 0U : 2U;
-  bus_config[2].can_num_lookup = flipped ? 0U : 2U;
+  bus_config[0].bus_lookup = flipped ? 1U : 0U;
+  bus_config[0].can_num_lookup = flipped ? 1U : 0U;
+  bus_config[1].bus_lookup = flipped ? 0U : 1U;
+  bus_config[1].can_num_lookup = flipped ? 0U : 1U;
 }
 
 #ifdef PANDA_JUNGLE
@@ -160,7 +163,7 @@ void ignition_can_hook(CANPacket_t *msg) {
     int len = GET_LEN(msg);
 
     // GM exception
-    if ((msg->addr == 0x1F1U) && (len == 8)) {
+    if ((msg->addr == 0x1F1U) && (len == 8) && !ignore_ignition_line) {
       // SystemPowerMode (2=Run, 3=Crank Request)
       ignition_can = (msg->data[0] & 0x2U) != 0U;
       ignition_can_cnt = 0U;
@@ -199,6 +202,20 @@ void ignition_can_hook(CANPacket_t *msg) {
     if ((msg->addr == 0x9EU) && (len == 8)) {
       ignition_can = (msg->data[0] >> 5) == 0x6U;
       ignition_can_cnt = 0U;
+    }
+
+    // Proton X50/X90, need it to ignore ignition line too
+    if ((msg->addr == 0x380U) && (len == 8)) {
+      ignition_can = true;
+      ignition_can_cnt = 0U;
+    }
+    if ((msg->addr == 0x1A7U) && (len == 8) && ignore_ignition_line_redundant) {
+      ignore_ignition_line = true;
+    }
+    // Proton X50 preFL and X90 has but not S70, X50 FL and X70
+    // can use 295, 400, 401, 654, 683, 686
+    if (msg->addr == 295U) {
+      ignore_ignition_line_redundant = true;
     }
 
   }

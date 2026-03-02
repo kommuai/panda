@@ -52,10 +52,22 @@ void register_clear_bits(volatile uint32_t *addr, uint32_t val) {
   register_set(addr, (~val), val);
 }
 
+// SPI and DMA registers are modified by hardware (DMA transfers); skip divergent check for them.
+#ifdef STM32H7
+#define REGISTER_IS_SPI_OR_DMA(addr) \
+  (((uint32_t)(addr) >= 0x58020000U && (uint32_t)(addr) < 0x58025000U) || \
+   ((uint32_t)(addr) >= 0x58010000U && (uint32_t)(addr) < 0x58014000U))
+#else
+#define REGISTER_IS_SPI_OR_DMA(addr) (0)
+#endif
+
 // To be called periodically
 void check_registers(void){
   for(uint16_t i=0U; i<REGISTER_MAP_SIZE; i++){
     if((uint32_t) register_map[i].address != 0U){
+      if (REGISTER_IS_SPI_OR_DMA(register_map[i].address)) {
+        continue;  /* skip SPI/DMA: hardware can change these (e.g. DMA) */
+      }
       ENTER_CRITICAL()
       if((*(register_map[i].address) & register_map[i].check_mask) != (register_map[i].value & register_map[i].check_mask)){
         if(!register_map[i].logged_fault){

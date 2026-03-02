@@ -115,6 +115,7 @@ class Panda:
   HW_TYPE_RED_PANDA = b'\x07'
   HW_TYPE_TRES = b'\x09'
   HW_TYPE_CUATRO = b'\x0a'
+  HW_TYPE_KEDUA = b'\x0b'
   HW_TYPE_BODY = b'\xb1'
 
   CAN_PACKET_VERSION = 4
@@ -123,10 +124,10 @@ class Panda:
   HEALTH_STRUCT = struct.Struct("<IIIIIIIIBBBBBHBBBHfBBHHHB")
   CAN_HEALTH_STRUCT = struct.Struct("<BIBBBBBBBBIIIIIIIHHBBBIIII")
 
-  H7_DEVICES = [HW_TYPE_RED_PANDA, HW_TYPE_TRES, HW_TYPE_CUATRO, HW_TYPE_BODY]
+  H7_DEVICES = [HW_TYPE_RED_PANDA, HW_TYPE_TRES, HW_TYPE_CUATRO, HW_TYPE_KEDUA, HW_TYPE_BODY]
   SUPPORTED_DEVICES = H7_DEVICES
 
-  INTERNAL_DEVICES = (HW_TYPE_TRES, HW_TYPE_CUATRO)
+  INTERNAL_DEVICES = (HW_TYPE_TRES, HW_TYPE_CUATRO, HW_TYPE_KEDUA)
 
   HARNESS_STATUS_NC = 0
   HARNESS_STATUS_NORMAL = 1
@@ -587,6 +588,10 @@ class Panda:
 
   def get_type(self):
     return self._handle.controlRead(Panda.REQUEST_IN, 0xc1, 0, 0, 0x40)
+
+  def get_mcu_type(self):
+    """MCU type for flashing; Kedua and other H7 pandas use the same H7 image."""
+    return McuType.H7
 
   # Returns tuple with health packet version and CAN packet/USB packet version
   def get_packets_versions(self):

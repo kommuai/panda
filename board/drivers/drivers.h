@@ -44,6 +44,7 @@ extern can_health_t can_health[PANDA_CAN_CNT];
 // Ignition detected from CAN meessages
 extern bool ignition_can;
 extern uint32_t ignition_can_cnt;
+extern bool ignore_ignition_line;
 
 extern bool can_silent;
 extern bool can_loopback;
