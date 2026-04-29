@@ -209,7 +209,7 @@ void ignition_can_hook(CANPacket_t *msg) {
       ignition_can = true;
       ignition_can_cnt = 0U;
     }
-    if ((msg->addr == 0x1A7U) && (len == 8) && ignore_ignition_line_redundant) {
+    if ((msg->addr == 0x260U) && (len == 8) && ignore_ignition_line_redundant) {
       ignore_ignition_line = true;
     }
     // Proton X50 preFL and X90 has but not S70, X50 FL and X70
