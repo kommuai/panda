@@ -209,12 +209,11 @@ void ignition_can_hook(CANPacket_t *msg) {
       ignition_can = true;
       ignition_can_cnt = 0U;
     }
-    if ((msg->addr == 0x260U) && (len == 8) && ignore_ignition_line_redundant) {
+    if ((msg->addr == 1058U) && (len == 8) && ignore_ignition_line_redundant) {
       ignore_ignition_line = true;
     }
-    // Proton X50 preFL and X90 has but not S70, X50 FL and X70
-    // can use 295, 400, 401, 654, 683, 686
-    if (msg->addr == 295U) {
+    // Proton X50 preFL has but not other Protons
+    if (msg->addr == 608U) {
       ignore_ignition_line_redundant = true;
     }
 
