@@ -209,13 +209,6 @@ void ignition_can_hook(CANPacket_t *msg) {
       ignition_can = true;
       ignition_can_cnt = 0U;
     }
-    if ((msg->addr == 1058U) && (len == 8) && ignore_ignition_line_redundant) {
-      ignore_ignition_line = true;
-    }
-    // Proton X50 preFL has but not other Protons
-    if (msg->addr == 608U) {
-      ignore_ignition_line_redundant = true;
-    }
 
   }
 }
