@@ -10,8 +10,7 @@ can_health_t can_health[PANDA_CAN_CNT] = {{0}, {0}, {0}};
 // Ignition detected from CAN meessages
 bool ignition_can = false;
 uint32_t ignition_can_cnt = 0U;
-bool ignore_ignition_line = false;
-bool ignore_ignition_line_redundant = false;
+// ignore_ignition_line defined in opendbc/safety/safety.h
 
 bool can_silent = true;
 bool can_loopback = false;
