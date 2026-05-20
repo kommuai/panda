@@ -12,7 +12,8 @@ static int get_health_pkt(void *dat) {
   health->voltage_pkt = current_board->read_voltage_mV();
   health->current_pkt = current_board->read_current_mA();
 
-  health->ignition_line_pkt = (uint8_t)(harness_check_ignition() && !ignore_ignition_line);
+  // ignition_line_pkt matches started ignore mask for SOM bootkick sticky PROTON_SAFETY_PARAM_IGNORE_IGNITION_LINE.
+  health->ignition_line_pkt = (uint8_t)(harness_check_ignition() && !(ignore_ignition_line || ignore_ignition_line_sticky));
   health->ignition_can_pkt = ignition_can;
 
   health->controls_allowed_pkt = controls_allowed;
