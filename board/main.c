@@ -171,8 +171,9 @@ static void tick_handler(void) {
 
       const bool recent_heartbeat = heartbeat_counter == 0U;
 
-      // tick drivers at 1Hz
-      bool started = (harness_check_ignition() && !ignore_ignition_line) || ignition_can;
+      // 1Hz tick SOM bootkick started ORs sticky so PROTON_SAFETY_PARAM_IGNORE_IGNITION_LINE still applies through SILENT with stuck harness.
+      const bool ignore_harness_for_started = ignore_ignition_line || ignore_ignition_line_sticky;
+      const bool started = (harness_check_ignition() && !ignore_harness_for_started) || ignition_can;
       bootkick_tick(started, recent_heartbeat);
 
       // increase heartbeat counter and cap it at the uint32 limit
